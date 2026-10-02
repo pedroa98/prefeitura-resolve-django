@@ -130,3 +130,5 @@ MAILERS = {
 }
 
 AUTH_USER_MODEL = "usuarios.Usuario"
+MEDIA_ROOT = BASE_DIR / "media_privada"
+MEDIA_URL = "/anexos/"

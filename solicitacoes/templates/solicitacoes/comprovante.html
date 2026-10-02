@@ -1,0 +1,34 @@
+{% extends 'solicitacoes/base.html' %}
+
+{% block conteudo %}
+<h1>Solicitação registrada</h1>
+
+<p>
+  Protocolo:
+  <code>{{ solicitacao.protocolo }}</code>
+</p>
+
+{% if chave %}
+<p>
+  Chave de acesso:
+  <code>{{ chave }}</code>
+</p>
+
+<p>
+  <strong>Guarde os dois códigos agora.</strong>
+  A chave não será exibida novamente.
+  Sem cadastro, não conseguimos recuperá-la se você a perder.
+</p>
+{% else %}
+<p>
+  A solicitação foi vinculada à sua conta.
+  Guarde o protocolo para consultar.
+</p>
+{% endif %}
+
+<p>
+  <a href="{% url 'solicitacoes:detalhe' solicitacao.protocolo %}">
+    Ver andamento
+  </a>
+</p>
+{% endblock %}

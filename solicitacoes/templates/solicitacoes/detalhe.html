@@ -1,0 +1,43 @@
+{% extends 'solicitacoes/base.html' %}
+
+{% block conteudo %}
+<h1>{{ solicitacao.titulo }}</h1>
+
+<p>Protocolo: <code>{{ solicitacao.protocolo }}</code></p>
+<p>Prefeitura: {{ solicitacao.organizacao }}</p>
+<p>Categoria: {{ solicitacao.categoria }}</p>
+
+<p>
+  Status:
+  <strong>{{ solicitacao.get_status_display }}</strong>
+</p>
+
+<p>Prioridade: {{ solicitacao.get_prioridade_display }}</p>
+
+<p>{{ solicitacao.descricao|linebreaksbr }}</p>
+
+<p>
+  Local: {{ solicitacao.endereco }}
+  {{ solicitacao.numero }} — {{ solicitacao.bairro }}
+</p>
+
+{% if solicitacao.cep %}
+<p>CEP: {{ solicitacao.cep }}</p>
+{% endif %}
+
+{% if solicitacao.ponto_referencia %}
+<p>Referência: {{ solicitacao.ponto_referencia }}</p>
+{% endif %}
+
+{% if solicitacao.imagem %}
+<img
+  src="{{ solicitacao.imagem.url }}"
+  alt="Imagem do problema"
+>
+{% endif %}
+
+<p>
+  Atualizada em:
+  {{ solicitacao.atualizado_em|date:'d/m/Y H:i' }}
+</p>
+{% endblock %}

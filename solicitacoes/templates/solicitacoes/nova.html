@@ -1,0 +1,26 @@
+{% extends 'solicitacoes/base.html' %}
+
+{% block conteudo %}
+<h1>Nova solicitação</h1>
+
+{% if not user.is_authenticated %}
+<p>
+  Você pode enviar sem cadastro.
+  Guarde o protocolo e a chave para acompanhar.
+</p>
+{% endif %}
+
+<p>
+  Para preservar sua identidade,
+  evite dados pessoais no texto e na foto.
+</p>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="envio_id" value="{{ envio_id }}">
+
+  {{ form.as_p }}
+
+  <button type="submit">Enviar solicitação</button>
+</form>
+{% endblock %}

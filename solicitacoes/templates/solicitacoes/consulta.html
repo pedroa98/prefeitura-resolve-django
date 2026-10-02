@@ -1,0 +1,12 @@
+{% extends 'solicitacoes/base.html' %}
+
+{% block conteudo %}
+<h1>Acompanhar solicitação</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <button type="submit">Consultar</button>
+</form>
+{% endblock %}
