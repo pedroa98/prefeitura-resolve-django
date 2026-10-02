@@ -1,0 +1,19 @@
+{% extends 'solicitacoes/base.html' %}
+{% block conteudo %}
+<h1>Atender solicitação</h1>
+<h2>{{ solicitacao.titulo }}</h2>
+<p>Prefeitura: {{ solicitacao.organizacao }}</p>
+<p>Protocolo: <code>{{ solicitacao.protocolo }}</code></p>
+<p>Status atual: {{ solicitacao.get_status_display }}</p>
+<p>Prioridade atual: {{ solicitacao.get_prioridade_display }}</p>
+<p>
+  <a href="{% url 'solicitacoes:detalhe' solicitacao.protocolo %}">Ver dados e mensagens</a>
+  · <a href="{% url 'solicitacoes:painel' %}">Voltar ao painel</a>
+  · <a href="{% url 'solicitacoes:atender' solicitacao.protocolo %}">Abrir atendimento novamente</a>
+</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Salvar atendimento</button>
+</form>
+{% endblock %}

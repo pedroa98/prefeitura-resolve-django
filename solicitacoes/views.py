@@ -180,19 +180,24 @@ def consultar_solicitacao(request):
 @never_cache
 @require_safe
 def detalhe_solicitacao(request, protocolo):
-    solicitacao = get_object_or_404(
-        Solicitacao,
-        protocolo=protocolo,
-    )
+    from .permissoes import pode_atender
 
+    solicitacao = get_object_or_404(Solicitacao, protocolo=protocolo)
     if not pode_acessar(request, solicitacao):
         raise Http404("Solicitação não encontrada.")
 
-    return render(
-        request,
-        "solicitacoes/detalhe.html",
-        {"solicitacao": solicitacao},
-    )
+    equipe = pode_atender(request.user, solicitacao)
+    respostas = solicitacao.respostas.select_related("autor")
+    if not equipe:
+        respostas = respostas.filter(publica=True)
+
+    return render(request, "solicitacoes/detalhe.html", {
+        "solicitacao": solicitacao,
+        "equipe": equipe,
+        "respostas": respostas,
+        "historico": solicitacao.historico.select_related("autor"),
+    })
+
 
 
 @never_cache

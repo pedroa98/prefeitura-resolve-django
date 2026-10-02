@@ -1,0 +1,10 @@
+{% extends 'solicitacoes/base.html' %}
+{% block conteudo %}
+<h1>Acesso à área da equipe</h1>
+<p>Sua conta não possui um vínculo ativo que permita acessar este painel.</p>
+<p>Se você é funcionário, procure o administrador para conferir seu cadastro.</p>
+<form method="post" action="{% url 'solicitacoes:sair' %}">
+  {% csrf_token %}
+  <button type="submit">Sair da conta</button>
+</form>
+{% endblock %}

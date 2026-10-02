@@ -154,3 +154,58 @@ class Solicitacao(models.Model):
 
     def __str__(self):
         return f"{self.protocolo} — {self.titulo}"
+
+
+
+class Resposta(models.Model):
+    solicitacao = models.ForeignKey(
+        Solicitacao, on_delete=models.PROTECT, related_name="respostas",
+    )
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="respostas_enviadas",
+    )
+    texto = models.TextField(max_length=5000)
+    publica = models.BooleanField(default=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["criado_em", "pk"]
+        verbose_name = "resposta"
+        verbose_name_plural = "respostas"
+
+    def __str__(self):
+        return f"Resposta da solicitação {self.solicitacao.protocolo}"
+
+
+class HistoricoAtendimento(models.Model):
+    solicitacao = models.ForeignKey(
+        Solicitacao, on_delete=models.PROTECT, related_name="historico",
+    )
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="alteracoes_de_solicitacoes",
+    )
+    status_anterior = models.CharField(
+        max_length=20, choices=Solicitacao.Status.choices,
+    )
+    status_novo = models.CharField(
+        max_length=20, choices=Solicitacao.Status.choices,
+    )
+    prioridade_anterior = models.CharField(
+        max_length=10, choices=Solicitacao.Prioridade.choices,
+    )
+    prioridade_nova = models.CharField(
+        max_length=10, choices=Solicitacao.Prioridade.choices,
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["criado_em", "pk"]
+        verbose_name = "histórico de atendimento"
+        verbose_name_plural = "históricos de atendimento"
+
+    def __str__(self):
+        return f"Alteração da solicitação {self.solicitacao.protocolo}"

@@ -1,43 +1,58 @@
 {% extends 'solicitacoes/base.html' %}
-
 {% block conteudo %}
 <h1>{{ solicitacao.titulo }}</h1>
-
 <p>Protocolo: <code>{{ solicitacao.protocolo }}</code></p>
 <p>Prefeitura: {{ solicitacao.organizacao }}</p>
 <p>Categoria: {{ solicitacao.categoria }}</p>
-
-<p>
-  Status:
-  <strong>{{ solicitacao.get_status_display }}</strong>
-</p>
-
+<p>Status: <strong>{{ solicitacao.get_status_display }}</strong></p>
 <p>Prioridade: {{ solicitacao.get_prioridade_display }}</p>
-
 <p>{{ solicitacao.descricao|linebreaksbr }}</p>
-
-<p>
-  Local: {{ solicitacao.endereco }}
-  {{ solicitacao.numero }} — {{ solicitacao.bairro }}
-</p>
-
-{% if solicitacao.cep %}
-<p>CEP: {{ solicitacao.cep }}</p>
-{% endif %}
-
-{% if solicitacao.ponto_referencia %}
-<p>Referência: {{ solicitacao.ponto_referencia }}</p>
-{% endif %}
-
+<p>Local: {{ solicitacao.endereco }} {{ solicitacao.numero }} — {{ solicitacao.bairro }}</p>
+{% if solicitacao.cep %}<p>CEP: {{ solicitacao.cep }}</p>{% endif %}
+{% if solicitacao.ponto_referencia %}<p>Referência: {{ solicitacao.ponto_referencia }}</p>{% endif %}
 {% if solicitacao.imagem %}
-<img
-  src="{{ solicitacao.imagem.url }}"
-  alt="Imagem do problema"
->
+<img src="{{ solicitacao.imagem.url }}" alt="Imagem do problema">
+{% endif %}
+<p>Atualizada em: {{ solicitacao.atualizado_em|date:'d/m/Y H:i' }}</p>
+
+{% if equipe %}
+<p>
+  <a href="{% url 'solicitacoes:atender' solicitacao.protocolo %}">Atender solicitação</a>
+  · <a href="{% url 'solicitacoes:painel' %}">Voltar ao painel</a>
+</p>
 {% endif %}
 
-<p>
-  Atualizada em:
-  {{ solicitacao.atualizado_em|date:'d/m/Y H:i' }}
-</p>
+<h2>Mensagens</h2>
+{% for resposta in respostas %}
+<article>
+  <p>
+    <strong>{% if resposta.publica %}Resposta da prefeitura{% else %}Anotação interna{% endif %}</strong>
+    · {{ resposta.criado_em|date:'d/m/Y H:i' }}
+  </p>
+  {% if equipe %}<p>Registrada por {{ resposta.autor.username }}.</p>{% endif %}
+  <p>{{ resposta.texto|linebreaksbr }}</p>
+</article>
+<hr>
+{% empty %}
+<p>Nenhuma mensagem disponível.</p>
+{% endfor %}
+
+<h2>Histórico</h2>
+<p>{{ solicitacao.criado_em|date:'d/m/Y H:i' }} · Solicitação registrada.</p>
+{% for evento in historico %}
+<article>
+  <p>
+    {{ evento.criado_em|date:'d/m/Y H:i' }}
+    {% if equipe %} · Alteração por {{ evento.autor.username }}{% endif %}
+  </p>
+  {% if evento.status_anterior != evento.status_novo %}
+  <p>Status: {{ evento.get_status_anterior_display }} → {{ evento.get_status_novo_display }}</p>
+  {% endif %}
+  {% if evento.prioridade_anterior != evento.prioridade_nova %}
+  <p>Prioridade: {{ evento.get_prioridade_anterior_display }} → {{ evento.get_prioridade_nova_display }}</p>
+  {% endif %}
+</article>
+{% empty %}
+<p>Nenhuma alteração de atendimento registrada.</p>
+{% endfor %}
 {% endblock %}

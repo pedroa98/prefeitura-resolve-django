@@ -113,3 +113,57 @@ class ConsultaSolicitacaoForm(forms.Form):
             "Obrigatória para consultar uma solicitação anônima."
         ),
     )
+
+
+
+class AtendimentoForm(forms.Form):
+    status = forms.ChoiceField(choices=Solicitacao.Status.choices)
+    prioridade = forms.ChoiceField(choices=Solicitacao.Prioridade.choices)
+    texto = forms.CharField(
+        label="Resposta ou anotação",
+        required=False,
+        max_length=5000,
+        widget=forms.Textarea(attrs={"rows": 5}),
+    )
+    publica = forms.BooleanField(
+        label="Compartilhar a mensagem com o cidadão",
+        required=False,
+        initial=True,
+        help_text="Desmarque para registrar uma anotação interna da equipe.",
+    )
+    versao = forms.CharField(widget=forms.HiddenInput, max_length=64)
+
+    def __init__(self, *args, solicitacao, **kwargs):
+        self.solicitacao = solicitacao
+        kwargs["initial"] = {
+            "status": solicitacao.status,
+            "prioridade": solicitacao.prioridade,
+            "versao": solicitacao.atualizado_em.isoformat(),
+            **kwargs.get("initial", {}),
+        }
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        dados = super().clean()
+        status = dados.get("status")
+        prioridade = dados.get("prioridade")
+        texto = dados.get("texto", "")
+        if status is None or prioridade is None:
+            return dados
+
+        if (status == self.solicitacao.status
+                and prioridade == self.solicitacao.prioridade and not texto):
+            raise forms.ValidationError(
+                "Altere o status ou a prioridade, ou escreva uma mensagem."
+            )
+
+        encerrando = (
+            status != self.solicitacao.status
+            and status in [Solicitacao.Status.RESOLVIDA, Solicitacao.Status.CANCELADA]
+        )
+        if encerrando and (not texto or not dados.get("publica")):
+            raise forms.ValidationError(
+                "Para resolver ou cancelar, escreva uma explicação e marque "
+                "Compartilhar a mensagem com o cidadão."
+            )
+        return dados
