@@ -20,7 +20,7 @@ urlpatterns = [
         "entrar/",
         LoginView.as_view(
             template_name="solicitacoes/entrar.html",
-            next_page="solicitacoes:consulta",
+            next_page="usuarios:minhas_solicitacoes",
         ),
         name="entrar",
     ),

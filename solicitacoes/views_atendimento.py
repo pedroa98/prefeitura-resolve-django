@@ -1,7 +1,10 @@
+from uuid import UUID
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -9,6 +12,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_safe
 
 from .forms import AtendimentoForm
+from .forms_painel import FiltroPainelForm
 from .models import HistoricoAtendimento, Resposta, Solicitacao
 from .permissoes import pode_atender, pode_usar_painel, solicitacoes_para_atendimento
 
@@ -69,9 +73,38 @@ def painel(request):
 
     solicitacoes = solicitacoes_para_atendimento(request.user).select_related(
         "organizacao", "categoria",
-    ).order_by("-criado_em", "-pk")
+    )
+    form = FiltroPainelForm(request.GET)
+    filtros_validos = form.is_valid()
+
+    if filtros_validos:
+        dados = form.cleaned_data
+        if dados["status"]:
+            solicitacoes = solicitacoes.filter(status=dados["status"])
+        if dados["categoria"]:
+            solicitacoes = solicitacoes.filter(categoria=dados["categoria"])
+        if dados["prioridade"]:
+            solicitacoes = solicitacoes.filter(prioridade=dados["prioridade"])
+        if dados["q"]:
+            busca = Q(titulo__icontains=dados["q"])
+            try:
+                protocolo = UUID(dados["q"])
+            except ValueError:
+                pass
+            else:
+                busca |= Q(protocolo=protocolo)
+            solicitacoes = solicitacoes.filter(busca)
+    else:
+        # Um filtro inválido mostra o erro, sem retornar uma lista mais ampla.
+        solicitacoes = solicitacoes.none()
+
+    solicitacoes = solicitacoes.order_by("-criado_em", "-pk")
     pagina = Paginator(solicitacoes, 20).get_page(request.GET.get("pagina"))
-    return render(request, "solicitacoes/painel.html", {"pagina": pagina})
+    return render(request, "solicitacoes/painel.html", {
+        "pagina": pagina,
+        "form": form,
+        "filtros_validos": filtros_validos,
+    })
 
 
 @never_cache

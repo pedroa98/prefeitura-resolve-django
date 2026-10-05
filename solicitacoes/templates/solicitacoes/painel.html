@@ -2,17 +2,32 @@
 {% block conteudo %}
 <h1>Painel de atendimento</h1>
 <p>Conectado como {{ user.username }}.</p>
-<form method="post" action="{% url 'solicitacoes:sair' %}">
-  {% csrf_token %}
-  <button type="submit">Sair da conta</button>
+
+<form method="get" action="{% url 'solicitacoes:painel' %}">
+  <fieldset>
+    <legend>Buscar e filtrar solicitações</legend>
+    {{ form.as_p }}
+    <p>
+      <button type="submit">Filtrar</button>
+      <a href="{% url 'solicitacoes:painel' %}">Limpar filtros</a>
+    </p>
+  </fieldset>
 </form>
-<p>{{ pagina.paginator.count }} solicitação(ões).</p>
+
+{% if filtros_validos %}
+<p>Solicitações encontradas: {{ pagina.paginator.count }}.</p>
+{% else %}
+<p role="alert">Corrija os filtros destacados e clique em Filtrar novamente.</p>
+{% endif %}
+
 {% for solicitacao in pagina %}
 <article>
   <h2>{{ solicitacao.titulo }}</h2>
   <p>Prefeitura: {{ solicitacao.organizacao }}</p>
+  <p>Categoria: {{ solicitacao.categoria }}</p>
   <p>Protocolo: <code>{{ solicitacao.protocolo }}</code></p>
   <p>Status: {{ solicitacao.get_status_display }} · Prioridade: {{ solicitacao.get_prioridade_display }}</p>
+  <p>Recebida em {{ solicitacao.criado_em|date:"d/m/Y H:i" }}.</p>
   <p>
     <a href="{% url 'solicitacoes:detalhe' solicitacao.protocolo %}">Ver solicitação</a>
     · <a href="{% url 'solicitacoes:atender' solicitacao.protocolo %}">Atender</a>
@@ -20,13 +35,15 @@
 </article>
 <hr>
 {% empty %}
-<p>Nenhuma solicitação para atender nas suas prefeituras.</p>
+{% if filtros_validos %}
+<p>Nenhuma solicitação corresponde aos filtros selecionados.</p>
+{% endif %}
 {% endfor %}
 {% if pagina.has_other_pages %}
 <nav aria-label="Páginas de solicitações">
-  {% if pagina.has_previous %}<a href="?pagina={{ pagina.previous_page_number }}">Anterior</a>{% endif %}
+  {% if pagina.has_previous %}<a href="{% querystring pagina=pagina.previous_page_number %}">Anterior</a>{% endif %}
   <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
-  {% if pagina.has_next %}<a href="?pagina={{ pagina.next_page_number }}">Próxima</a>{% endif %}
+  {% if pagina.has_next %}<a href="{% querystring pagina=pagina.next_page_number %}">Próxima</a>{% endif %}
 </nav>
 {% endif %}
 {% endblock %}
