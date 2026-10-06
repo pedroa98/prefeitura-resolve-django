@@ -1,39 +1,50 @@
+{% load static %}
 <!doctype html>
 <html lang="pt-br">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="same-origin">
-  <title>Prefeitura Resolve</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 760px; margin: 30px auto; padding: 0 18px; line-height: 1.5; }
-    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 24px; }
-    nav form { margin: 0; }
-    label { display: block; font-weight: bold; }
-    input:not([type="checkbox"]), select, textarea { box-sizing: border-box; width: 100%; padding: 10px; }
-    button { padding: 12px 20px; cursor: pointer; }
-    .errorlist { color: #a40000; }
-    code { overflow-wrap: anywhere; }
-    img { max-width: 100%; height: auto; }
-  </style>
+  <title>{% block titulo %}Prefeitura Resolve{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'solicitacoes/site.css' %}">
 </head>
 <body>
-  <nav>
-    <a href="{% url 'solicitacoes:nova' %}">Nova solicitação</a>
-    <a href="{% url 'solicitacoes:consulta' %}">Acompanhar solicitação</a>
-    <a href="{% url 'solicitacoes:painel' %}">Área da equipe</a>
-    {% if user.is_authenticated %}
-    <a href="{% url 'usuarios:minhas_solicitacoes' %}">Minhas solicitações</a>
-    <span>Olá, {{ user.username }}.</span>
-    <form method="post" action="{% url 'solicitacoes:sair' %}">
-      {% csrf_token %}
-      <button type="submit">Sair</button>
-    </form>
-    {% else %}
-    <a href="{% url 'solicitacoes:entrar' %}">Entrar</a>
-    <a href="{% url 'usuarios:cadastro' %}">Criar conta</a>
-    {% endif %}
-  </nav>
-  {% block conteudo %}{% endblock %}
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header">
+    <div class="container header-content">
+      <a class="brand" href="{% url 'solicitacoes:inicio' %}">
+        <span class="brand-mark" aria-hidden="true">PR</span>
+        <span>Prefeitura Resolve<small>Atendimento ao cidadão</small></span>
+      </a>
+      <nav class="site-nav" aria-label="Menu principal">
+        <a href="{% url 'solicitacoes:inicio' %}">Início</a>
+        <a href="{% url 'solicitacoes:nova' %}">Nova solicitação</a>
+        <a href="{% url 'solicitacoes:consulta' %}">Acompanhar</a>
+        <a href="{% url 'solicitacoes:painel' %}">Área da equipe</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'usuarios:minhas_solicitacoes' %}">Minhas solicitações</a>
+        <span class="user-name">Olá, {{ user.username }}.</span>
+        <form class="logout-form" method="post" action="{% url 'solicitacoes:sair' %}">
+          {% csrf_token %}
+          <button class="button-quiet" type="submit">Sair</button>
+        </form>
+        {% else %}
+        <a href="{% url 'solicitacoes:entrar' %}">Entrar</a>
+        <a class="nav-signup" href="{% url 'usuarios:cadastro' %}">Criar conta</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="container page-content" tabindex="-1">
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <span>Prefeitura Resolve</span>
+      <a href="{% url 'solicitacoes:consulta' %}">Acompanhar uma solicitação</a>
+    </div>
+  </footer>
 </body>
 </html>

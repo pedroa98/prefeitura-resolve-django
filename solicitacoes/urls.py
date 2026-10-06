@@ -1,11 +1,12 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
-from . import views, views_atendimento
+from . import views, views_atendimento, views_inicio
 
 app_name = "solicitacoes"
 
 urlpatterns = [
+    path("", views_inicio.inicio, name="inicio"),
     path("nova/", views.nova_solicitacao, name="nova"),
     path("consulta/", views.consultar_solicitacao, name="consulta"),
     path("solicitacao/<uuid:protocolo>/", views.detalhe_solicitacao, name="detalhe"),

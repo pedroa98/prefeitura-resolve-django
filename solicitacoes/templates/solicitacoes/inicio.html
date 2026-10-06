@@ -1,0 +1,97 @@
+{% extends 'solicitacoes/base.html' %}
+{% block titulo %}Início · Prefeitura Resolve{% endblock %}
+{% block conteudo %}
+<section class="home-hero" aria-labelledby="titulo-inicio">
+  <div class="hero-copy">
+    <p class="eyebrow">Um canal para a sua cidade</p>
+    <h1 id="titulo-inicio">Envie uma solicitação.<br>Acompanhe o atendimento.</h1>
+    <p class="hero-description">Relate um problema, informe onde aconteceu e acompanhe as respostas da organização responsável.</p>
+    <div class="hero-actions">
+      <a class="button" href="{% url 'solicitacoes:nova' %}">Nova solicitação <span aria-hidden="true">→</span></a>
+      <a class="button button-secondary" href="{% url 'solicitacoes:consulta' %}">Acompanhar solicitação</a>
+    </div>
+    <p class="hero-note">Você pode enviar com sua conta ou anonimamente, sem cadastro.</p>
+  </div>
+  <aside class="protocol-card" aria-labelledby="titulo-protocolo">
+    <span class="card-label">Envio anônimo</span>
+    <h2 id="titulo-protocolo">Guarde seu acesso.</h2>
+    <p>Ao enviar anonimamente, você recebe um protocolo e uma chave de acesso para consultar o andamento e as respostas.</p>
+    <div class="protocol-reminder">
+      <strong>Protocolo + chave</strong>
+      <span>Anote os dois códigos ao concluir o envio.</span>
+    </div>
+    <p class="small-text">A chave é exibida uma única vez. Sem os códigos, você não conseguirá consultar a solicitação anônima.</p>
+  </aside>
+</section>
+
+<section class="home-section" aria-labelledby="titulo-passos">
+  <div class="section-heading">
+    <p class="eyebrow">Como funciona</p>
+    <h2 id="titulo-passos">Do relato ao acompanhamento</h2>
+  </div>
+  <ol class="steps-grid">
+    <li>
+      <span class="step-number" aria-hidden="true">01</span>
+      <h3>Escolha a organização</h3>
+      <p>Selecione a prefeitura ou organização e a categoria da solicitação.</p>
+    </li>
+    <li>
+      <span class="step-number" aria-hidden="true">02</span>
+      <h3>Descreva o problema</h3>
+      <p>Informe o endereço e os detalhes. Você também pode incluir uma imagem.</p>
+    </li>
+    <li>
+      <span class="step-number" aria-hidden="true">03</span>
+      <h3>Acompanhe as respostas</h3>
+      <p>Consulte o status e as respostas públicas da equipe responsável.</p>
+    </li>
+  </ol>
+</section>
+
+<section class="home-section" aria-labelledby="titulo-acessos">
+  <div class="section-heading">
+    <p class="eyebrow">Acessos</p>
+    <h2 id="titulo-acessos">Seu espaço no sistema</h2>
+  </div>
+  <div class="access-grid">
+    {% if user.is_authenticated %}
+    <a class="access-card" href="{% url 'usuarios:minhas_solicitacoes' %}">
+      <span class="card-label">Sua conta</span>
+      <h3>Minhas solicitações</h3>
+      <p>Veja as solicitações identificadas que você enviou com esta conta.</p>
+      <span class="card-link">Abrir minha lista <span aria-hidden="true">→</span></span>
+    </a>
+    {% else %}
+    <a class="access-card" href="{% url 'usuarios:cadastro' %}">
+      <span class="card-label">Cidadão</span>
+      <h3>Crie sua conta</h3>
+      <p>Reúna suas solicitações identificadas em uma lista para acompanhar o atendimento.</p>
+      <span class="card-link">Criar conta <span aria-hidden="true">→</span></span>
+    </a>
+    {% endif %}
+    {% if area_equipe %}
+    <a class="access-card" href="{% url 'solicitacoes:painel' %}">
+      <span class="card-label">Equipe</span>
+      <h3>Painel de atendimento</h3>
+      <p>Filtre as solicitações, registre respostas e atualize o andamento dos atendimentos.</p>
+      <span class="card-link">Abrir painel <span aria-hidden="true">→</span></span>
+    </a>
+    {% elif not user.is_authenticated %}
+    <a class="access-card" href="{% url 'solicitacoes:painel' %}">
+      <span class="card-label">Funcionário</span>
+      <h3>Área da equipe</h3>
+      <p>Entre com a conta de funcionário vinculada à sua organização para realizar atendimentos.</p>
+      <span class="card-link">Entrar na área da equipe <span aria-hidden="true">→</span></span>
+    </a>
+    {% endif %}
+    {% if user.is_superuser %}
+    <a class="access-card" href="{% url 'admin:index' %}">
+      <span class="card-label">Administrador</span>
+      <h3>Administração do sistema</h3>
+      <p>Gerencie organizações, usuários, vínculos e categorias universais.</p>
+      <span class="card-link">Abrir administração <span aria-hidden="true">→</span></span>
+    </a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
