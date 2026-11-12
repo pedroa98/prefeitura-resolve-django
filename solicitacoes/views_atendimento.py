@@ -14,7 +14,12 @@ from django.views.decorators.http import require_http_methods, require_safe
 from .forms import AtendimentoForm
 from .forms_painel import FiltroPainelForm
 from .models import HistoricoAtendimento, Resposta, Solicitacao
-from .permissoes import pode_atender, pode_usar_painel, solicitacoes_para_atendimento
+from .permissoes import (
+    pode_atender,
+    pode_usar_painel,
+    pode_ver_relatorio,
+    solicitacoes_para_atendimento,
+)
 
 
 class AtendimentoDesatualizado(Exception):
@@ -104,6 +109,7 @@ def painel(request):
         "pagina": pagina,
         "form": form,
         "filtros_validos": filtros_validos,
+        "pode_ver_relatorio": pode_ver_relatorio(request.user),
     })
 
 
