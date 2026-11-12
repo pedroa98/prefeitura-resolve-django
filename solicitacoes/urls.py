@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
-from . import views, views_atendimento, views_inicio
+from . import views, views_atendimento, views_inicio, views_relatorio
 
 app_name = "solicitacoes"
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path("solicitacao/<uuid:protocolo>/", views.detalhe_solicitacao, name="detalhe"),
     path("anexos/<path:arquivo>", views.imagem_solicitacao, name="imagem"),
     path("painel/", views_atendimento.painel, name="painel"),
+    path("painel/relatorio/", views_relatorio.relatorio, name="relatorio"),
     path(
         "solicitacao/<uuid:protocolo>/atender/",
         views_atendimento.atender_solicitacao,
