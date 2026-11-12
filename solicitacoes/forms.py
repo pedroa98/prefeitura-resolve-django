@@ -1,6 +1,7 @@
 from io import BytesIO
 
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.validators import FileExtensionValidator
 from PIL import Image, ImageOps
@@ -8,6 +9,20 @@ from PIL import Image, ImageOps
 from organizacoes.models import Organizacao
 
 from .models import Categoria, Solicitacao, validar_tamanho_imagem
+
+
+class EntrarForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({
+            "placeholder": "Digite seu nome de usuário",
+            "autocomplete": "username",
+            "autofocus": True,
+        })
+        self.fields["password"].widget.attrs.update({
+            "placeholder": "Digite sua senha",
+            "autocomplete": "current-password",
+        })
 
 
 class NovaSolicitacaoForm(forms.ModelForm):
@@ -38,9 +53,24 @@ class NovaSolicitacaoForm(forms.ModelForm):
         self.fields["organizacao"].queryset = (
             Organizacao.objects.filter(ativa=True)
         )
+        self.fields["organizacao"].empty_label = "Selecione a prefeitura"
         self.fields["categoria"].queryset = (
             Categoria.objects.filter(ativa=True)
         )
+        self.fields["categoria"].empty_label = "Selecione a categoria"
+
+        placeholders = {
+            "titulo": "Ex.: Poste apagado na Rua das Flores",
+            "descricao": "Descreva o problema e quando você percebeu.",
+            "cep": "Ex.: 50000-000",
+            "bairro": "Ex.: Boa Vista",
+            "endereco": "Ex.: Rua das Flores",
+            "numero": "Ex.: 120",
+            "ponto_referencia": "Ex.: Próximo à praça",
+        }
+        for nome, texto in placeholders.items():
+            self.fields[nome].widget.attrs["placeholder"] = texto
+
         self.fields["imagem"].help_text = (
             "JPG, PNG ou WebP, até 5 MB e 30 megapixels."
         )
@@ -100,20 +130,28 @@ class NovaSolicitacaoForm(forms.ModelForm):
 
 
 class ConsultaSolicitacaoForm(forms.Form):
-    protocolo = forms.UUIDField(label="Protocolo")
+    protocolo = forms.UUIDField(
+        label="Protocolo",
+        widget=forms.TextInput(attrs={
+            "placeholder": "Cole o protocolo recebido",
+            "autocomplete": "off",
+        }),
+    )
 
     chave = forms.CharField(
         label="Chave de acesso",
         max_length=64,
         required=False,
         widget=forms.PasswordInput(
-            attrs={"autocomplete": "off"}
+            attrs={
+                "autocomplete": "off",
+                "placeholder": "Digite a chave de acesso",
+            }
         ),
         help_text=(
             "Obrigatória para consultar uma solicitação anônima."
         ),
     )
-
 
 
 class AtendimentoForm(forms.Form):
@@ -123,7 +161,12 @@ class AtendimentoForm(forms.Form):
         label="Resposta ou anotação",
         required=False,
         max_length=5000,
-        widget=forms.Textarea(attrs={"rows": 5}),
+        widget=forms.Textarea(
+            attrs={
+                "rows": 5,
+                "placeholder": "Escreva uma resposta ou anotação.",
+            }
+        ),
     )
     publica = forms.BooleanField(
         label="Compartilhar a mensagem com o cidadão",
