@@ -1,4 +1,3 @@
-from datetime import timedelta
 from statistics import mean, median
 
 from django.db.models import Count, Exists, OuterRef, Subquery
@@ -69,7 +68,7 @@ def relatorio(request):
 
     total = len(registros)
     respondidas = sum(item["tem_resposta_publica"] for item in registros)
-    pendentes = total - respondidas
+    sem_resposta = total - respondidas
 
     horas_resposta = [
         (item["primeira_resposta_em"] - item["criado_em"]).total_seconds() / 3600
@@ -79,8 +78,8 @@ def relatorio(request):
 
     faixas = [
         ("Até 24 horas", 0),
-        ("De 1 a 3 dias", 0),
-        ("De 3 a 7 dias", 0),
+        ("Mais de 1 até 3 dias", 0),
+        ("Mais de 3 até 7 dias", 0),
         ("Mais de 7 dias", 0),
     ]
     for horas in horas_resposta:
@@ -93,16 +92,17 @@ def relatorio(request):
         else:
             faixas[3] = (faixas[3][0], faixas[3][1] + 1)
 
-    status_totais = {item["status"]: item["total"] for item in (
-        solicitacoes.values("status").annotate(total=Count("pk"))
-    )}
+    status_totais = {
+        item["status"]: item["total"]
+        for item in solicitacoes.values("status").annotate(total=Count("pk"))
+    }
     status_barras = [
         _barra(label, status_totais.get(value, 0), total)
         for value, label in Solicitacao.Status.choices
     ]
     respostas_barras = [
         _barra("Com resposta pública", respondidas, total),
-        _barra("Aguardando resposta pública", pendentes, total),
+        _barra("Sem resposta pública", sem_resposta, total),
     ]
     tempos_barras = [
         _barra(label, quantidade, len(horas_resposta))
@@ -114,9 +114,9 @@ def relatorio(request):
         "filtros_validos": filtros_validos,
         "total": total,
         "respondidas": respondidas,
-        "pendentes": pendentes,
+        "sem_resposta": sem_resposta,
         "percentual_respondidas": round(respondidas * 100 / total) if total else 0,
-        "percentual_pendentes": round(pendentes * 100 / total) if total else 0,
+        "percentual_sem_resposta": round(sem_resposta * 100 / total) if total else 0,
         "media_horas": mean(horas_resposta) if horas_resposta else None,
         "mediana_horas": median(horas_resposta) if horas_resposta else None,
         "status_barras": status_barras,
