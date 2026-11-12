@@ -2,6 +2,9 @@
 {% block conteudo %}
 <h1>Painel de atendimento</h1>
 <p>Conectado como {{ user.username }}.</p>
+{% if pode_ver_relatorio %}
+<p><a href="{% url 'solicitacoes:relatorio' %}">Abrir relatório administrativo</a></p>
+{% endif %}
 
 <form method="get" action="{% url 'solicitacoes:painel' %}">
   <fieldset>
