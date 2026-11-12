@@ -2,6 +2,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 from . import views, views_atendimento, views_inicio, views_relatorio
+from .forms import EntrarForm
 
 app_name = "solicitacoes"
 
@@ -22,6 +23,7 @@ urlpatterns = [
         "entrar/",
         LoginView.as_view(
             template_name="solicitacoes/entrar.html",
+            form_class=EntrarForm,
             next_page="usuarios:minhas_solicitacoes",
         ),
         name="entrar",
