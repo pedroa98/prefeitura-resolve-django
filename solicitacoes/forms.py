@@ -1,6 +1,7 @@
 from io import BytesIO
 
 from django import forms
+from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.validators import FileExtensionValidator
@@ -14,15 +15,25 @@ from .models import Categoria, Solicitacao, validar_tamanho_imagem
 class EntrarForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].widget.attrs.update({
-            "placeholder": "Digite seu nome de usuário",
-            "autocomplete": "username",
-            "autofocus": True,
-        })
-        self.fields["password"].widget.attrs.update({
-            "placeholder": "Digite sua senha",
-            "autocomplete": "current-password",
-        })
+        _adicionar_placeholders_login(self)
+
+
+class EntrarAdminForm(AdminAuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _adicionar_placeholders_login(self)
+
+
+def _adicionar_placeholders_login(formulario):
+    formulario.fields["username"].widget.attrs.update({
+        "placeholder": "Digite seu nome de usuário",
+        "autocomplete": "username",
+        "autofocus": True,
+    })
+    formulario.fields["password"].widget.attrs.update({
+        "placeholder": "Digite sua senha",
+        "autocomplete": "current-password",
+    })
 
 
 class NovaSolicitacaoForm(forms.ModelForm):
