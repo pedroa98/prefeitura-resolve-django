@@ -34,9 +34,21 @@ SECRET_KEY = 'django-insecure-m40@dj5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce
 
 ALLOWED_HOSTS = [
     "prefeitura-resolve-django-9gjc.vercel.app",
+    "prefeitura-resolve-django.vercel.app",
     "localhost",
     "127.0.0.1",
 ]
+
+# A Vercel gera URLs diferentes para deploys, branches e previews.
+# Inclua somente os hosts do próprio projeto informados pela plataforma.
+for variavel_vercel in (
+    "VERCEL_URL",
+    "VERCEL_BRANCH_URL",
+    "VERCEL_PROJECT_PRODUCTION_URL",
+):
+    host_vercel = os.environ.get(variavel_vercel, "").strip()
+    if host_vercel and host_vercel not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host_vercel)
 
 
 # Application definition
