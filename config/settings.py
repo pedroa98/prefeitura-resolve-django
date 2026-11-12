@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+
 import dj_database_url
 from dotenv import load_dotenv
 
@@ -21,11 +23,14 @@ load_dotenv(BASE_DIR / ".env")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m40@dj5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce'
+# Enable locally with DJANGO_DEBUG=True. Production defaults to False.
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in {
+    "1",
+    "true",
+    "yes",
+}
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+SECRET_KEY = 'django-insecure-m40@dj5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce'
 
 ALLOWED_HOSTS = [
     "prefeitura-resolve-django-9gjc.vercel.app",
@@ -123,7 +128,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
