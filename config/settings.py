@@ -30,7 +30,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in {
     "yes",
 }
 
-SECRET_KEY = 'django-insecure-m40@dj5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce'
+SECRET_KEY = 'django-insecure-m40@j5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce'
 
 ALLOWED_HOSTS = [
     "prefeitura-resolve-django-9gjc.vercel.app",
@@ -141,6 +141,57 @@ MAILERS = {
     },
 }
 
+
 AUTH_USER_MODEL = "usuarios.Usuario"
 MEDIA_ROOT = BASE_DIR / "media_privada"
 MEDIA_URL = "/anexos/"
+
+# Imagens ficam no filesystem local quando as credenciais S3 não estão
+# configuradas. Em produção, use o bucket privado do Supabase Storage.
+SUPABASE_S3_ENDPOINT = os.environ.get("SUPABASE_S3_ENDPOINT", "").strip()
+SUPABASE_S3_REGION = os.environ.get("SUPABASE_S3_REGION", "").strip()
+SUPABASE_S3_BUCKET = os.environ.get("SUPABASE_S3_BUCKET", "").strip()
+SUPABASE_S3_ACCESS_KEY_ID = os.environ.get(
+    "SUPABASE_S3_ACCESS_KEY_ID", ""
+).strip()
+SUPABASE_S3_SECRET_ACCESS_KEY = os.environ.get(
+    "SUPABASE_S3_SECRET_ACCESS_KEY", ""
+).strip()
+
+SUPABASE_S3_SETTINGS = (
+    SUPABASE_S3_ENDPOINT,
+    SUPABASE_S3_REGION,
+    SUPABASE_S3_BUCKET,
+    SUPABASE_S3_ACCESS_KEY_ID,
+    SUPABASE_S3_SECRET_ACCESS_KEY,
+)
+
+if any(SUPABASE_S3_SETTINGS) and not all(SUPABASE_S3_SETTINGS):
+    from django.core.exceptions import ImproperlyConfigured
+
+    raise ImproperlyConfigured(
+        "Configure todas as variáveis SUPABASE_S3_* para habilitar "
+        "o armazenamento de imagens no Supabase Storage."
+    )
+
+if all(SUPABASE_S3_SETTINGS):
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "bucket_name": SUPABASE_S3_BUCKET,
+                "endpoint_url": SUPABASE_S3_ENDPOINT,
+                "region_name": SUPABASE_S3_REGION,
+                "access_key": SUPABASE_S3_ACCESS_KEY_ID,
+                "secret_key": SUPABASE_S3_SECRET_ACCESS_KEY,
+                "addressing_style": "path",
+                "signature_version": "s3v4",
+                "default_acl": None,
+                "querystring_auth": True,
+                "file_overwrite": False,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
