@@ -30,7 +30,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in {
     "yes",
 }
 
-SECRET_KEY = 'django-insecure-m40@j5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce'
+SECRET_KEY = 'django-insecure-m40@dj5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce'
 
 ALLOWED_HOSTS = [
     "prefeitura-resolve-django-9gjc.vercel.app",
