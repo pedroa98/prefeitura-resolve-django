@@ -24,8 +24,9 @@
   <p>Total de solicitações no período: <strong>{{ total }}</strong></p>
   <ul>
     <li>Com resposta pública: <strong>{{ respondidas }}</strong> ({{ percentual_respondidas }}%).</li>
-    <li>Aguardando primeira resposta pública: <strong>{{ pendentes }}</strong> ({{ percentual_pendentes }}%).</li>
+    <li>Sem resposta pública: <strong>{{ sem_resposta }}</strong> ({{ percentual_sem_resposta }}%).</li>
   </ul>
+  <p>A presença de resposta e o status atual são apresentados separadamente; uma solicitação respondida pode continuar em atendimento.</p>
 </section>
 
 <section aria-labelledby="tempo-titulo">
@@ -33,11 +34,7 @@
   {% if media_horas != None %}
   <p>Média: <strong>{{ media_horas|floatformat:1 }} horas</strong>.</p>
   <p>Mediana: <strong>{{ mediana_horas|floatformat:1 }} horas</strong>.</p>
-  {% else %}
-  <p>Ainda não há solicitações respondidas publicamente neste recorte para calcular o tempo.</p>
-  {% endif %}
   <h3>Solicitações por faixa de tempo</h3>
-  {% if media_horas != None %}
   <ul>
     {% for item in tempos_barras %}
     <li>
@@ -47,12 +44,12 @@
     {% endfor %}
   </ul>
   {% else %}
-  <p>Sem dados para este gráfico.</p>
+  <p>Ainda não há solicitações respondidas publicamente neste recorte para calcular o tempo ou exibir o gráfico.</p>
   {% endif %}
 </section>
 
 <section aria-labelledby="respostas-titulo">
-  <h2 id="respostas-titulo">Com resposta pública e aguardando resposta</h2>
+  <h2 id="respostas-titulo">Solicitações com e sem resposta pública</h2>
   <ul>
     {% for item in respostas_barras %}
     <li>
