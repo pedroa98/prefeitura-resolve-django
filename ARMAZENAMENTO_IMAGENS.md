@@ -29,7 +29,7 @@ Quando todas as variáveis estiverem definidas, o Django seleciona o backend S3.
 
 ## Vercel
 
-Em **Project → Settings → Environment Variables**, crie estas variáveis para o ambiente **Production** (e **Preview**, se for testar previews):
+Em **Project → Settings → Environment Variables**, habilite **Automatically expose System Environment Variables**. O Django usa `VERCEL_URL`, `VERCEL_BRANCH_URL` e `VERCEL_PROJECT_PRODUCTION_URL` para aceitar os domínios de deploy e preview do próprio projeto. Crie também estas variáveis para **Production** (e **Preview**, se for testar previews):
 
 - `SUPABASE_S3_ENDPOINT`
 - `SUPABASE_S3_REGION`
