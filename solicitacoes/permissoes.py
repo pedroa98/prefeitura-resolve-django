@@ -47,7 +47,6 @@ def liberar_acesso_anonimo(request, solicitacao):
     )
 
 
-
 def vinculos_atendimento(usuario):
     return Vinculo.objects.filter(
         usuario=usuario,
@@ -61,6 +60,19 @@ def pode_usar_painel(usuario):
     if not usuario.is_authenticated or not usuario.is_active:
         return False
     return usuario.is_superuser or vinculos_atendimento(usuario).exists()
+
+
+def pode_ver_relatorio(usuario):
+    if not usuario.is_authenticated or not usuario.is_active:
+        return False
+    if usuario.is_superuser:
+        return True
+    return Vinculo.objects.filter(
+        usuario=usuario,
+        ativo=True,
+        organizacao__ativa=True,
+        funcao=Vinculo.Funcao.ADMINISTRADOR,
+    ).exists()
 
 
 def pode_atender(usuario, solicitacao):
@@ -81,3 +93,19 @@ def solicitacoes_para_atendimento(usuario):
     return Solicitacao.objects.filter(
         organizacao_id__in=vinculos_atendimento(usuario).values("organizacao_id"),
     )
+
+
+def solicitacoes_para_relatorio(usuario):
+    from .models import Solicitacao
+
+    if not pode_ver_relatorio(usuario):
+        return Solicitacao.objects.none()
+    if usuario.is_superuser:
+        return Solicitacao.objects.all()
+    organizacoes = Vinculo.objects.filter(
+        usuario=usuario,
+        ativo=True,
+        organizacao__ativa=True,
+        funcao=Vinculo.Funcao.ADMINISTRADOR,
+    ).values("organizacao_id")
+    return Solicitacao.objects.filter(organizacao_id__in=organizacoes)

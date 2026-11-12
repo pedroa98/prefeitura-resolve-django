@@ -1,0 +1,75 @@
+{% extends 'solicitacoes/base.html' %}
+{% block titulo %}Relatório administrativo · Prefeitura Resolve{% endblock %}
+{% block conteudo %}
+<h1>Relatório administrativo</h1>
+<p>Dados das solicitações das organizações às quais você está vinculado como administrador.</p>
+<p><a href="{% url 'solicitacoes:painel' %}">Voltar ao painel de atendimento</a></p>
+
+<form method="get" action="{% url 'solicitacoes:relatorio' %}">
+  <fieldset>
+    <legend>Filtrar relatório</legend>
+    {{ form.as_p }}
+    <p>
+      <button type="submit">Aplicar filtros</button>
+      <a href="{% url 'solicitacoes:relatorio' %}">Limpar filtros</a>
+    </p>
+  </fieldset>
+</form>
+
+{% if not filtros_validos %}
+<p role="alert">Confira os filtros. O relatório não exibirá resultados enquanto houver valores inválidos.</p>
+{% else %}
+<section aria-labelledby="resumo-titulo">
+  <h2 id="resumo-titulo">Resumo</h2>
+  <p>Total de solicitações no período: <strong>{{ total }}</strong></p>
+  <ul>
+    <li>Com resposta pública: <strong>{{ respondidas }}</strong> ({{ percentual_respondidas }}%).</li>
+    <li>Sem resposta pública: <strong>{{ sem_resposta }}</strong> ({{ percentual_sem_resposta }}%).</li>
+  </ul>
+  <p>A presença de resposta e o status atual são apresentados separadamente; uma solicitação respondida pode continuar em atendimento.</p>
+</section>
+
+<section aria-labelledby="tempo-titulo">
+  <h2 id="tempo-titulo">Tempo até a primeira resposta pública</h2>
+  {% if media_horas != None %}
+  <p>Média: <strong>{{ media_horas|floatformat:1 }} horas</strong>.</p>
+  <p>Mediana: <strong>{{ mediana_horas|floatformat:1 }} horas</strong>.</p>
+  <h3>Solicitações por faixa de tempo</h3>
+  <ul>
+    {% for item in tempos_barras %}
+    <li>
+      {{ item.label }}: {{ item.value }}
+      <progress max="100" value="{{ item.percent }}" aria-label="{{ item.label }}: {{ item.value }} solicitações"></progress>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>Ainda não há solicitações respondidas publicamente neste recorte para calcular o tempo ou exibir o gráfico.</p>
+  {% endif %}
+</section>
+
+<section aria-labelledby="respostas-titulo">
+  <h2 id="respostas-titulo">Solicitações com e sem resposta pública</h2>
+  <ul>
+    {% for item in respostas_barras %}
+    <li>
+      {{ item.label }}: {{ item.value }} ({{ item.percent }}%)
+      <progress max="100" value="{{ item.percent }}" aria-label="{{ item.label }}: {{ item.value }}"></progress>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section aria-labelledby="status-titulo">
+  <h2 id="status-titulo">Solicitações por status atual</h2>
+  <ul>
+    {% for item in status_barras %}
+    <li>
+      {{ item.label }}: {{ item.value }}
+      <progress max="100" value="{{ item.percent }}" aria-label="{{ item.label }}: {{ item.value }} solicitações"></progress>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}
