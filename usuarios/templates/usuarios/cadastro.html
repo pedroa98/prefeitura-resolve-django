@@ -4,6 +4,7 @@
 <p>Com uma conta, você pode reunir suas solicitações identificadas em uma página.</p>
 <form method="post">
   {% csrf_token %}
+  {% include 'solicitacoes/includes/form_error_summary.html' with form=form %}
   {{ form.as_p }}
   <button type="submit">Criar conta</button>
 </form>
