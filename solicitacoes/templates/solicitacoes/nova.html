@@ -17,6 +17,7 @@
 
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
+  {% include 'solicitacoes/includes/form_error_summary.html' with form=form %}
   <input type="hidden" name="envio_id" value="{{ envio_id }}">
 
   {{ form.as_p }}
