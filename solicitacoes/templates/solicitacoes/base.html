@@ -17,10 +17,10 @@
         <span>Prefeitura Resolve<small>Atendimento ao cidadão</small></span>
       </a>
       <nav class="site-nav" aria-label="Menu principal">
-        <a href="{% url 'solicitacoes:inicio' %}">Início</a>
-        <a href="{% url 'solicitacoes:nova' %}">Nova solicitação</a>
-        <a href="{% url 'solicitacoes:consulta' %}">Acompanhar</a>
-        <a href="{% url 'solicitacoes:painel' %}">Área da equipe</a>
+        <a href="{% url 'solicitacoes:inicio' %}"{% if request.resolver_match.url_name == 'inicio' %} aria-current="page"{% endif %}>Início</a>
+        <a href="{% url 'solicitacoes:nova' %}"{% if request.resolver_match.url_name == 'nova' %} aria-current="page"{% endif %}>Nova solicitação</a>
+        <a href="{% url 'solicitacoes:consulta' %}"{% if request.resolver_match.url_name == 'consulta' %} aria-current="page"{% endif %}>Acompanhar</a>
+        <a href="{% url 'solicitacoes:painel' %}"{% if request.resolver_match.url_name == 'painel' %} aria-current="page"{% endif %}>Área da equipe</a>
         {% if user.is_authenticated %}
         <a href="{% url 'usuarios:minhas_solicitacoes' %}">Minhas solicitações</a>
         <span class="user-name">Olá, {{ user.username }}.</span>
@@ -29,7 +29,7 @@
           <button class="button-quiet" type="submit">Sair</button>
         </form>
         {% else %}
-        <a href="{% url 'solicitacoes:entrar' %}">Entrar</a>
+        <a href="{% url 'solicitacoes:entrar' %}"{% if request.resolver_match.url_name == 'entrar' %} aria-current="page"{% endif %}>Entrar</a>
         <a class="nav-signup" href="{% url 'usuarios:cadastro' %}">Criar conta</a>
         {% endif %}
       </nav>
@@ -37,6 +37,13 @@
   </header>
 
   <main id="conteudo" class="container page-content" tabindex="-1">
+    {% if messages %}
+    <div class="site-messages" aria-live="polite" aria-atomic="true">
+      {% for message in messages %}
+      <p class="site-message">{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
     {% block conteudo %}{% endblock %}
   </main>
 

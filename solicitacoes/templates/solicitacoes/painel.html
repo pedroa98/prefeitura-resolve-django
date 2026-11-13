@@ -9,6 +9,7 @@
 <form method="get" action="{% url 'solicitacoes:painel' %}">
   <fieldset>
     <legend>Buscar e filtrar solicitações</legend>
+    {% include 'solicitacoes/includes/form_error_summary.html' with form=form %}
     {{ form.as_p }}
     <p>
       <button type="submit">Filtrar</button>

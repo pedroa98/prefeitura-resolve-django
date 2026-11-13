@@ -13,6 +13,7 @@
 </p>
 <form method="post">
   {% csrf_token %}
+  {% include 'solicitacoes/includes/form_error_summary.html' with form=form %}
   {{ form.as_p }}
   <button type="submit">Salvar atendimento</button>
 </form>
