@@ -4,6 +4,7 @@
 <p>Use seu nome de usuário e sua senha.</p>
 <form method="post">
   {% csrf_token %}
+  {% include 'solicitacoes/includes/form_error_summary.html' with form=form %}
   {{ form.as_p }}
   <input type="hidden" name="next" value="{{ next }}">
   <button type="submit">Entrar</button>
