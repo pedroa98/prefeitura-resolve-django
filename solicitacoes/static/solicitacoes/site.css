@@ -40,8 +40,8 @@ a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 .brand-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--brand); color: white; font-size: 16px; flex-shrink: 0; }
 .brand small { display: block; margin-top: 3px; font-size: 12px; font-weight: 500; color: var(--muted); }
 .site-nav { display: flex; flex: 1; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 16px; font-size: 14px; }
-.site-nav > a { padding-block: 6px; color: var(--ink); text-decoration: none; font-weight: 600; }
-.site-nav > a:hover { color: var(--brand); text-decoration: underline; }
+.site-nav > a { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 4px; color: var(--ink); text-decoration: none; font-weight: 600; }
+.site-nav > a:hover, .site-nav > a[aria-current="page"] { color: var(--brand); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .site-nav .nav-signup { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
 .user-name { color: var(--muted); overflow-wrap: anywhere; max-width: 100%; }
 .logout-form { margin: 0; }
@@ -109,7 +109,7 @@ button, .button {
 button:hover, .button:hover { background: var(--brand-hover); border-color: var(--brand-hover); color: white; }
 .button-secondary { color: var(--brand); background: white; }
 .button-secondary:hover { color: var(--brand-hover); background: #eaf4f0; }
-.button-quiet { min-height: 38px; padding: 6px 12px; color: var(--ink); background: white; border-color: var(--border); font-size: 14px; }
+.button-quiet { min-height: 44px; padding: 6px 12px; color: var(--ink); background: white; border-color: var(--border); font-size: 14px; }
 .button-quiet:hover { color: var(--brand); background: #edf5f1; border-color: var(--brand); }
 .page-content form button + a { display: inline-block; margin: 10px 0 10px 14px; }
 .page-content nav { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 28px; }
@@ -166,4 +166,17 @@ button:hover, .button:hover { background: var(--brand-hover); border-color: var(
 @media (max-width: 420px) {
   .hero-actions { flex-direction: column; }
   .hero-actions .button { width: 100%; }
+}
+
+.site-messages { max-width: 780px; margin-bottom: 20px; }
+.site-message { padding: 12px 16px; border-left: 4px solid var(--brand); border-radius: 6px; background: #e7f1ec; color: var(--ink); }
+.form-error-summary { max-width: 780px; margin: 20px 0; padding: 16px 20px; border: 2px solid #8c1d18; border-radius: 10px; background: #fff0ee; color: #67140f; }
+.form-error-summary h2 { margin: 0 0 8px; font-size: 1.15rem; letter-spacing: 0; }
+.form-error-summary ul { margin: 0; padding-left: 22px; }
+.form-error-summary a { color: #67140f; font-weight: 650; text-decoration-thickness: 2px; }
+.form-error-summary:focus { outline: 3px solid #2563eb; outline-offset: 4px; }
+
+@media (forced-colors: active) {
+  :focus-visible, .form-error-summary:focus { outline: 2px solid Highlight; }
+  .site-nav > a[aria-current="page"] { outline: 1px solid LinkText; }
 }
