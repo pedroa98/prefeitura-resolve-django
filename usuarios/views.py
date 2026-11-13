@@ -4,8 +4,8 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_http_methods, require_safe
 from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.http import require_http_methods, require_safe
 
 from solicitacoes.models import Solicitacao
 

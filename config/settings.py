@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 import dj_database_url
 from dotenv import load_dotenv
@@ -30,7 +30,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in {
     "yes",
 }
 
-SECRET_KEY = 'django-insecure-m40@dj5dv^hbh_kxp1%j*2j2(uvp4(o4f*sx1jidlu#dt2+lce'
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 ALLOWED_HOSTS = [
     "prefeitura-resolve-django-9gjc.vercel.app",
